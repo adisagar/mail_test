@@ -5,7 +5,7 @@ import pickle
 
 # from sentiment import create_featureset_and_labels
 
-train_x, train_y , test_x, test_y = pd.read_pickle('Models/sentiment_set.pickle')
+train_x, train_y , test_x, test_y = pd.read_pickle('Models/mail_set.pickle')
 
 #10 class output -
 
@@ -44,7 +44,7 @@ def train_nueral_network(x):
     cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=prediction, labels=y) )
     optimizer = tf.train.AdamOptimizer().minimize(cost)
 
-    hm_epochs = 1
+    hm_epochs = 5
 
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
@@ -65,8 +65,9 @@ def train_nueral_network(x):
         correct = tf.equal(tf.argmax(prediction,1), tf.argmax(y,1))
         save_path = saver.save(sess, "Models/model.ckpt")
         accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
-        print(test_x.shape())
-        print('Accuracy:', accuracy.eval({x:test_x, y:test_y}))
+        # print(test_x.shape())
+        print('\nTesing the Accuracy : - ', accuracy.eval({x:test_x, y:test_y}))
+        print("\nNueral network model is ready and is saved to file.\n\n")
 
 if __name__ == '__main__' :
     train_nueral_network(x)

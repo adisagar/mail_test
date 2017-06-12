@@ -6,15 +6,16 @@ import json
 import numpy as np
 import re
  
- 
+repliedFile = "Models/replied.txt"
+not_repliedfile = "Models/not_replied.txt"
+
 def create_connection(db_file):
     try:
         conn = sqlite3.connect(db_file)
-        print("Connection success")
+        print("\nConnected to database and started fetching emails....")
         return conn
     except Error as e:
         print(e)
- 
     return None
  
 
@@ -23,21 +24,22 @@ def fetchAllEmails(jsonStr, prefix):
     emails = ""
     if len(list) < 15:
         for i in range(len(list)):
-            emails += " " + prefix+list[i]['e']
-    return emails.replace(".com","")
+            emails += " " + re.sub('(?=@)(.*)','',prefix+list[i]['e'])
+    return emails
 
 def fetchnot_RepliedEmails(jsonStr,frommail, prefix):
     list = json.loads(jsonStr)
     emails = ""
     if len(list) < 15:
         for i in range(len(list)):
-            emails += " " + prefix+list[i]['e']
-        emails += " "+prefix+frommail
-    return emails.replace(".com","")
+            emails += " " + re.sub('(?=@)(.*)','',prefix+list[i]['e'])
+        emails += " "+prefix+re.sub('(?=@)(.*)','',frommail)
+    return emails
 
 def dump_sent_items(conn):
     # select_task_by_priority(conn,1)
     df = pd.read_sql_query("select ed.ccjson, e.tovalue from Emails e inner join EmailDetail ed on e.email_Id = ed.emailid inner join EmailToFolder ef on e.email_Id = ef.emailId where ef.folderid = 17", conn)
+    print("\nEmails that are replied or sent : ", len(df) )
     plainToValues = []
     plainCCValues = []
     for index , row in df.iterrows():
@@ -47,7 +49,8 @@ def dump_sent_items(conn):
     df["plaintovalue"] = plainToValues
     df["plainccvalue"] = plainCCValues
     df.drop(['CcJson','ToValue'], 1, inplace=True)
-    df.to_csv('replied_new.txt', header=None, index=None, sep=',', mode='w')
+    # df.to_csv(repliedFile, header=None, index=None, sep=',', mode='w')
+    np.savetxt(repliedFile, df.values, fmt='%s')
 
 def dump_no_replies(conn):
     query = "select ed.ccjson, e.tovalue, e.fromemail from Emails e "
@@ -58,26 +61,26 @@ def dump_no_replies(conn):
     query += "inner join EmailReference Ref on EG.MessageId = Ref.Reference "
     query += "inner join EmailToFolder EF  on EF.EmailId = Ref.EmailId where EF.folderid = 17) "
     df = pd.read_sql_query(query, conn)
+    print("\nEmails not been replied : ", len(df) )
     plainToValues = []
     plainCCValues = []
     for index , row in df.iterrows():
        plainToValues.append(fetchnot_RepliedEmails(row["ToValue"],row["FromEmail"], "to"))  
        # plainToValues.append(row["FromEmail"])
        plainCCValues.append(fetchAllEmails(row["CcJson"],"cc"))
-
+ 
     df["plaintovalue"] = plainToValues
     df["plainccvalue"] = plainCCValues
     df.drop(['CcJson','ToValue', 'FromEmail'], 1, inplace=True)
-    df.to_csv('not_replied_new.txt', header=None, index=None, sep=',', mode='w')
+    # df.to_csv(not_repliedfile, header=None, index=None, sep=',', mode='w')
+    np.savetxt(not_repliedfile, df.values, fmt='%s')
 
 
-
- 
 def main():
     # value  = "adityaprasad@vmware.com"
     # replaced = re.sub('[@]*','',value)
     # print("Replaced value ", replaced)
-    database = "taskbox.sqlite"
+    database = "Models/taskbox.sqlite"
  
     # create a database connection
     conn = create_connection(database)
@@ -85,6 +88,7 @@ def main():
         dump_sent_items(conn)
         dump_no_replies(conn)
     conn.close()
+    print("\nFeatures are extracted from the emails and saved to file.\n")
  
  
 if __name__ == '__main__':

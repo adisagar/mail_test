@@ -4,10 +4,10 @@ import pandas as pd
 import pickle
 
 # from sentiment import create_featureset_and_labels
-from deepnueral import neural_network_model
-from sentiment import featureset_from_lexicon
+from deep_nueral_network import neural_network_model
+from generate_features import featureset_from_main_features
 
-train_x, train_y , test_x, test_y = pd.read_pickle('Models/sentiment_set.pickle')
+# train_x, train_y , test_x, test_y = pd.read_pickle('Models/mail_set.pickle')
 
 #10 class output -
 
@@ -18,7 +18,7 @@ train_x, train_y , test_x, test_y = pd.read_pickle('Models/sentiment_set.pickle'
 # n_classes = 2
 # batch_size = 100
 
-x = tf.placeholder('float', [None,1583])
+x = tf.placeholder('float', [None,1455])
 y = tf.placeholder('float')
 
 
@@ -59,19 +59,29 @@ def predict_sample(x):
         sess.run(tf.global_variables_initializer())
         saver = tf.train.Saver()
         saver.restore(sess, "Models/model.ckpt")
+        print("\nRestore the saved model from file")
         correct = tf.equal(tf.argmax(prediction,1), tf.argmax(y,1))
         accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
-        test_x = featureset_from_lexicon("toMarkThwaites ccMaheshaHolla ccManjunathBhat")
-        # print("test_x" ,test_x)
+        print("\nGenerating feature set from the input..\n")
+        input = "toDL.Dev.IOS.SDK torfueston ccdrydbeck ccwpinner"
+        test_x = featureset_from_main_features(input)
         result = accuracy.eval({x:[test_x], y:[[1,0]]})
+        print("\nInput - ", input, "\n")
         if result == 1:
-            print("Replied")
+            print("Result ----- Will Reply \n")
         else:
-            print("Not Replied")
+            print("Result ----- Will Not Reply\n")
 
-predict_sample(x)
+if __name__ == '__main__' :
+    print("Prediction script main method - ")
+    predict_sample(x)
 
-
+# toDL.Dev.IOS.SDK torfueston  ccmikkery ccdrydbeck ccwpinner
+# topramani
+# topramani toDevelopment2
+# toNiranjanParamashivaiah
+# togarora toIKuppusamy972  ccabukkapattanam
+# toDL.QE.All toDevelopment2 tosravuri torchayanam toewelch
 
 
 
