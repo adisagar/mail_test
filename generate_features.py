@@ -68,7 +68,7 @@ def create_featureset_and_labels(replied, not_replied, test_size = 0.1):
 
 	features = np.array(features)
 	testing_size = int(test_size*len(features))
-	print("Devide data into training/testing sets. Testing size(0.1)  - ",  testing_size)  
+	print("\nDivide data into training/testing sets. Testing size(0.1)  - ",  testing_size)  
 	train_x = list(features[:,0][:-testing_size])
 	train_y = list(features[:,1][:-testing_size])
 
@@ -78,7 +78,7 @@ def create_featureset_and_labels(replied, not_replied, test_size = 0.1):
 
 if __name__ == '__main__' :
 	train_x, train_y , test_x, test_y,main_feautes = create_featureset_and_labels('Models/replied.txt', 'Models/not_replied.txt')
-	print("Data preprocessing completed!. Now saving it....")
+	print("\nData preprocessing completed!. Now saving it....")
 	with open('Models/mail_set.pickle','wb') as f :
 		pickle.dump([train_x, train_y , test_x, test_y],f)
 		print("\nDumped the complete training and testing data sets into mail_set.pickle - This will be used by deep nueral network.")

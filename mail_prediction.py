@@ -63,10 +63,11 @@ def predict_sample(x):
         correct = tf.equal(tf.argmax(prediction,1), tf.argmax(y,1))
         accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
         print("\nGenerating feature set from the input..\n")
-        input = "toDL.Dev.IOS.SDK torfueston ccdrydbeck ccwpinner"
+        input = "toReneOlivera  ccShravanShantharam942 ccIshanSrivastava ccNikhilRavishankar"
         test_x = featureset_from_main_features(input)
         result = accuracy.eval({x:[test_x], y:[[1,0]]})
         print("\nInput - ", input, "\n")
+        print("\nInput - ", test_x, "\n")
         if result == 1:
             print("Result ----- Will Reply \n")
         else:
@@ -82,6 +83,7 @@ if __name__ == '__main__' :
 # toNiranjanParamashivaiah
 # togarora toIKuppusamy972  ccabukkapattanam
 # toDL.QE.All toDevelopment2 tosravuri torchayanam toewelch
+#toReneOlivera  ccShravanShantharam942 ccIshanSrivastava ccNikhilRavishankar
 
 
 

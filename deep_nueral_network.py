@@ -59,11 +59,11 @@ def train_nueral_network(x):
                 c,_ = sess.run([cost,optimizer], feed_dict = {x: batch_x, y : batch_y})
                 epoch_loss += c
                 i += batch_size
-            print('Epoch:', epoch, 'completed out of:',hm_epochs,'loss:',epoch_loss)
+            print('Round:', epoch, 'completed out of:',hm_epochs,'loss:',epoch_loss)
 
         saver = tf.train.Saver()
         correct = tf.equal(tf.argmax(prediction,1), tf.argmax(y,1))
-        save_path = saver.save(sess, "Models/model.ckpt")
+        save_path = saver.save(sess, "model.ckpt")
         accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
         # print(test_x.shape())
         print('\nTesing the Accuracy : - ', accuracy.eval({x:test_x, y:test_y}))
